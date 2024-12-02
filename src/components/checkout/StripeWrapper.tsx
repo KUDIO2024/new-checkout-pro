@@ -1,10 +1,9 @@
+import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { STRIPE_CONFIG } from "../../config/stripe";
 import { CardPaymentForm } from "./CardPaymentForm";
 import type { CheckoutState } from "../../types/checkout";
-
-const stripePromise = await loadStripe(STRIPE_CONFIG.publishableKey);
 
 interface StripeWrapperProps {
   totalPrice: number;
@@ -17,6 +16,21 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
   state,
   onCustomerID,
 }) => {
+  const [stripePromise, setStripePromise] = useState<any>(null);
+
+  useEffect(() => {
+    const loadStripeAsync = async () => {
+      const stripe = await loadStripe(STRIPE_CONFIG.publishableKey);
+      setStripePromise(stripe);
+    };
+
+    loadStripeAsync();
+  }, []);
+
+  if (!stripePromise) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Elements stripe={stripePromise}>
       <CardPaymentForm
