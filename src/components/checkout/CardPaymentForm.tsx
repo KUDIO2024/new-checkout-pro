@@ -113,7 +113,7 @@ export function CardPaymentForm({
   ) {
     try {
       const response = await fetch(
-        "http://localhost:8000/create-payment-intent",
+        "https://new-checkout-backend.onrender.com/create-payment-intent",
         {
           method: "POST",
           headers: {
@@ -135,17 +135,20 @@ export function CardPaymentForm({
   }
 
   async function registerDomain() {
-    const response = await fetch(`http://localhost:8000/register-domain`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        domain,
-        emailPlan,
-        userDetails,
-      }),
-    });
+    const response = await fetch(
+      `https://new-checkout-backend.onrender.com/register-domain`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          domain,
+          emailPlan,
+          userDetails,
+        }),
+      }
+    );
 
     const result = await response.json();
     console.log(result);

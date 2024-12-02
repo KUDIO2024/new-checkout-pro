@@ -48,7 +48,7 @@ export function DomainRegistration({
     setIsLoading(true);
 
     const results = await fetch(
-      `http://localhost:8000/domain-availability?domain=${searchTerm}`
+      `https://new-checkout-backend.onrender.com/domain-availability?domain=${searchTerm}`
     );
     const data = await results.json();
     console.log("Response data:", data);
