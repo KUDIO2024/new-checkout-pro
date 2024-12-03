@@ -100,7 +100,9 @@ export function Confirmation({
                 Domain Registration ({state.domain?.name}
                 {state.domain?.extension})
               </span>
-              <span className="font-medium">£{domainPrice}/year</span>
+              <span className="font-medium">
+                £{domainPrice.toFixed(2)}/year
+              </span>
             </div>
           )}
           {state.emailPlan && (

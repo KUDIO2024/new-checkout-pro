@@ -19,7 +19,6 @@ export function CardPaymentForm({
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  console.log(state);
   const domain = state.domain && state.domain?.name + state.domain?.extension;
   const emailPlan = state.emailPlan;
   const userDetails = state.userDetails;
@@ -59,10 +58,8 @@ export function CardPaymentForm({
       }
 
       const paymentMethodId = paymentMethod.id;
-      console.log(paymentMethodId);
       const { clientSecret, payment_succeed, newerror } =
         await createPaymentIntent(paymentMethodId, totalPrice);
-      console.log({ clientSecret, payment_succeed, newerror });
 
       if (clientSecret) {
         const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -78,7 +75,6 @@ export function CardPaymentForm({
           return;
         } else if (paymentIntent.status === "succeeded") {
           const registerDomainResponse = await registerDomain();
-          console.log(registerDomainResponse);
           if (registerDomainResponse.response.status) {
             onCustomerID(registerDomainResponse.customerId);
             alert("Domain registered successfully");
@@ -88,7 +84,6 @@ export function CardPaymentForm({
         }
       } else if (payment_succeed) {
         const registerDomainResponse = await registerDomain();
-        console.log(registerDomainResponse);
         if (registerDomainResponse.response.status) {
           onCustomerID(registerDomainResponse.customerId);
           alert("Domain registered successfully");
@@ -99,7 +94,6 @@ export function CardPaymentForm({
         alert(newerror);
       }
     } catch (err) {
-      console.error("Payment error:", err);
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setIsProcessing(false);
@@ -150,7 +144,6 @@ export function CardPaymentForm({
     );
 
     const result = await response.json();
-    console.log(result);
     return result;
   }
 
