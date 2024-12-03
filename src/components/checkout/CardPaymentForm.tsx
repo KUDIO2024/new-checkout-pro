@@ -73,7 +73,6 @@ export function CardPaymentForm({
             },
           }
         );
-
         if (error) {
           alert("Payment failed.");
           return;

@@ -106,6 +106,16 @@ function App() {
     }));
   };
 
+  const handleBackFromComfirm = () => {
+    if (state.showDomainConfirmStep) {
+      setState((prev) => ({ ...prev, currentStep: prev.currentStep - 1 }));
+    } else {
+      setState((prev) => ({ ...prev, currentStep: 1 }));
+    }
+  };
+
+  console.log(state);
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:py-12">
       <div className="max-w-4xl mx-auto">
@@ -168,7 +178,7 @@ function App() {
               state={state}
               onSelectPaymentMethod={handleSelectPaymentMethod}
               onTotalPrice={handleTotalPrice}
-              onBack={handleBack}
+              onBack={handleBackFromComfirm}
               onConfirm={handleConfirm}
               onCustomerID={handleCustomerID}
             />
