@@ -1,25 +1,25 @@
-import { FormEvent, useState } from 'react';
-import { Button } from '../Button';
-import { Input } from '../Input';
-import { LoadingSpinner } from '../LoadingSpinner';
-import { ErrorMessage } from '../ErrorMessage';
-import { createFlowluClient } from '../../services/api/flowlu';
-import type { UserDetails, PlanType } from '../../types/checkout';
+import { FormEvent, useState } from "react";
+import { Button } from "../Button";
+import { Input } from "../Input";
+import { LoadingSpinner } from "../LoadingSpinner";
+import { ErrorMessage } from "../ErrorMessage";
+import { createFlowluClient } from "../../services/api/flowlu";
+import type { UserDetails, PlanType } from "../../types/checkout";
 
 interface UserRegistrationProps {
   userDetails: UserDetails;
   plan: PlanType;
   onUpdateDetails: (details: UserDetails) => void;
-  onNext: () => void;
   onBack: () => void;
+  onShowDomainConfirmation: (showDomainConfirmation: boolean) => void;
 }
 
 export function UserRegistration({
   userDetails,
   plan,
   onUpdateDetails,
-  onNext,
   onBack,
+  onShowDomainConfirmation,
 }: UserRegistrationProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -29,15 +29,20 @@ export function UserRegistration({
     const newErrors: Record<string, string> = {};
 
     // Validate required fields
-    if (!userDetails.firstName) newErrors.firstName = 'First name is required';
-    if (!userDetails.lastName) newErrors.lastName = 'Last name is required';
-    if (!userDetails.email) newErrors.email = 'Email is required';
-    if (!userDetails.phone) newErrors.phone = 'Phone is required';
-    if (!userDetails.address.line1) newErrors['address.line1'] = 'Address is required';
-    if (!userDetails.address.city) newErrors['address.city'] = 'City is required';
-    if (!userDetails.address.region) newErrors['address.region'] = 'State/Region is required';
-    if (!userDetails.address.postalCode) newErrors['address.postalCode'] = 'Postal code is required';
-    if (!userDetails.address.country) newErrors['address.country'] = 'Country is required';
+    if (!userDetails.firstName) newErrors.firstName = "First name is required";
+    if (!userDetails.lastName) newErrors.lastName = "Last name is required";
+    if (!userDetails.email) newErrors.email = "Email is required";
+    if (!userDetails.phone) newErrors.phone = "Phone is required";
+    if (!userDetails.address.line1)
+      newErrors["address.line1"] = "Address is required";
+    if (!userDetails.address.city)
+      newErrors["address.city"] = "City is required";
+    if (!userDetails.address.region)
+      newErrors["address.region"] = "State/Region is required";
+    if (!userDetails.address.postalCode)
+      newErrors["address.postalCode"] = "Postal code is required";
+    if (!userDetails.address.country)
+      newErrors["address.country"] = "Country is required";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -49,18 +54,24 @@ export function UserRegistration({
 
     try {
       await createFlowluClient(userDetails, plan);
-      onNext();
+      onShowDomainConfirmation(true);
     } catch (error) {
-      console.error('Error creating client:', error);
+      console.error("Error creating client:", error);
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to create account. Please try again.',
+        submit:
+          error instanceof Error
+            ? error.message
+            : "Failed to create account. Please try again.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateAddress = (field: keyof UserDetails['address'], value: string) => {
+  const updateAddress = (
+    field: keyof UserDetails["address"],
+    value: string
+  ) => {
     onUpdateDetails({
       ...userDetails,
       address: {
@@ -75,7 +86,7 @@ export function UserRegistration({
       <h2 className="text-2xl font-bold text-center mb-8">Your Details</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         {errors.submit && <ErrorMessage message={errors.submit} />}
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="First Name"
@@ -127,15 +138,15 @@ export function UserRegistration({
         <Input
           label="Address Line 1"
           value={userDetails.address.line1}
-          onChange={(e) => updateAddress('line1', e.target.value)}
-          error={errors['address.line1']}
+          onChange={(e) => updateAddress("line1", e.target.value)}
+          error={errors["address.line1"]}
           disabled={isLoading}
           required
         />
         <Input
           label="Address Line 2 (Optional)"
           value={userDetails.address.line2}
-          onChange={(e) => updateAddress('line2', e.target.value)}
+          onChange={(e) => updateAddress("line2", e.target.value)}
           disabled={isLoading}
         />
 
@@ -143,16 +154,16 @@ export function UserRegistration({
           <Input
             label="City"
             value={userDetails.address.city}
-            onChange={(e) => updateAddress('city', e.target.value)}
-            error={errors['address.city']}
+            onChange={(e) => updateAddress("city", e.target.value)}
+            error={errors["address.city"]}
             disabled={isLoading}
             required
           />
           <Input
             label="State/Region"
             value={userDetails.address.region}
-            onChange={(e) => updateAddress('region', e.target.value)}
-            error={errors['address.region']}
+            onChange={(e) => updateAddress("region", e.target.value)}
+            error={errors["address.region"]}
             disabled={isLoading}
             required
           />
@@ -162,23 +173,28 @@ export function UserRegistration({
           <Input
             label="Postal Code"
             value={userDetails.address.postalCode}
-            onChange={(e) => updateAddress('postalCode', e.target.value)}
-            error={errors['address.postalCode']}
+            onChange={(e) => updateAddress("postalCode", e.target.value)}
+            error={errors["address.postalCode"]}
             disabled={isLoading}
             required
           />
           <Input
             label="Country"
             value={userDetails.address.country}
-            onChange={(e) => updateAddress('country', e.target.value)}
-            error={errors['address.country']}
+            onChange={(e) => updateAddress("country", e.target.value)}
+            error={errors["address.country"]}
             disabled={isLoading}
             required
           />
         </div>
 
         <div className="flex justify-between items-center pt-4">
-          <Button type="button" variant="secondary" onClick={onBack} disabled={isLoading}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onBack}
+            disabled={isLoading}
+          >
             Back
           </Button>
           <div className="flex items-center gap-4">

@@ -38,6 +38,9 @@ export function DomainRegistration({
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  const extractedDomain = searchTerm.substring(0, searchTerm.indexOf("."));
+  console.log(domain);
+
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
     if (!searchTerm) {
@@ -48,7 +51,7 @@ export function DomainRegistration({
     setIsLoading(true);
 
     const results = await fetch(
-      `https://new-checkout-backend.onrender.com/domain-availability?domain=${searchTerm}`
+      `https://new-checkout-backend.onrender.com/domain-availability?domain=${extractedDomain}`
     );
     const data = await results.json();
     console.log("Response data:", data);
@@ -72,7 +75,7 @@ export function DomainRegistration({
     const ext = dotIndex !== -1 ? result.domain_name?.substring(dotIndex) : "";
 
     onUpdateDomain({
-      name: searchTerm,
+      name: searchTerm.toLowerCase(),
       extension: ext ?? "",
       available: result.is_available ?? false,
       price: result.register_price ?? 0,
@@ -126,7 +129,7 @@ export function DomainRegistration({
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">
-                      {searchTerm}
+                      {extractedDomain}
                       {result.domain_name?.substring(
                         result.domain_name.indexOf(".")
                       )}

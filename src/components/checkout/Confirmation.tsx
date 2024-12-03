@@ -94,13 +94,15 @@ export function Confirmation({
             <span>Website Development</span>
             <span className="font-medium">{getWebDevPrice()}</span>
           </div>
-          <div className="flex justify-between">
-            <span>
-              Domain Registration ({state.domain?.name}
-              {state.domain?.extension})
-            </span>
-            <span className="font-medium">£{domainPrice}/year</span>
-          </div>
+          {state.domain && (
+            <div className="flex justify-between">
+              <span>
+                Domain Registration ({state.domain?.name}
+                {state.domain?.extension})
+              </span>
+              <span className="font-medium">£{domainPrice}/year</span>
+            </div>
+          )}
           {state.emailPlan && (
             <div className="flex justify-between">
               <span>Email Hosting ({getEmailPlanName()})</span>
@@ -121,16 +123,6 @@ export function Confirmation({
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <PaymentSelection
-          selectedMethod={state.paymentMethod}
-          onSelectMethod={onSelectPaymentMethod}
-          totalPrice={totalPrice}
-          state={state}
-          onCustomerID={onCustomerID}
-        />
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
         <h3 className="text-lg font-semibold mb-4">Account Details</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -148,25 +140,34 @@ export function Confirmation({
           <div>
             <p className="text-sm text-gray-600">Email</p>
             <p className="font-medium">{state.userDetails.email}</p>
-          </div>
-          <div>
             <p className="text-sm text-gray-600">Phone</p>
             <p className="font-medium">{state.userDetails.phone}</p>
+            <p className="text-sm text-gray-600">Address</p>
+            <p className="font-medium">{state.userDetails.address.line1}</p>
+            {state.userDetails.address.line2 && (
+              <p className="font-medium">{state.userDetails.address.line2}</p>
+            )}
+            <p className="font-medium">
+              {state.userDetails.address.city},{" "}
+              {state.userDetails.address.region}{" "}
+              {state.userDetails.address.postalCode}
+            </p>
+            <p className="font-medium">{state.userDetails.address.country}</p>
           </div>
+          <div></div>
         </div>
 
-        <div className="mt-4">
-          <p className="text-sm text-gray-600">Address</p>
-          <p className="font-medium">{state.userDetails.address.line1}</p>
-          {state.userDetails.address.line2 && (
-            <p className="font-medium">{state.userDetails.address.line2}</p>
-          )}
-          <p className="font-medium">
-            {state.userDetails.address.city}, {state.userDetails.address.region}{" "}
-            {state.userDetails.address.postalCode}
-          </p>
-          <p className="font-medium">{state.userDetails.address.country}</p>
-        </div>
+        <div className="mt-4"></div>
+      </div>
+
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <PaymentSelection
+          selectedMethod={state.paymentMethod}
+          onSelectMethod={onSelectPaymentMethod}
+          totalPrice={totalPrice}
+          state={state}
+          onCustomerID={onCustomerID}
+        />
       </div>
 
       <div className="flex justify-between">

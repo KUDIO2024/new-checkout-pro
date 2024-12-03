@@ -35,4 +35,6 @@ export interface CheckoutState {
   currentStep: number;
   totalPrice: number;
   customerID: number;
+  showDomainConfirmation: boolean;
+  showDomainConfirmStep: boolean;
 }

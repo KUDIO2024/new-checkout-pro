@@ -5,6 +5,7 @@ import { UserRegistration } from "./components/checkout/UserRegistration";
 import { DomainRegistration } from "./components/checkout/DomainRegistration";
 import { EmailHosting } from "./components/checkout/EmailHosting";
 import { Confirmation } from "./components/checkout/Confirmation";
+import DomainConfirmation from "./components/checkout/DomainConfirmation";
 import type {
   CheckoutState,
   PlanType,
@@ -15,6 +16,7 @@ import type {
 } from "./types/checkout";
 
 const STEPS = ["Plan", "Account", "Domain", "Email", "Confirm"];
+const confirmedSTEPS = ["Plan", "Account", "Confirm"];
 
 function App() {
   const [state, setState] = useState<CheckoutState>({
@@ -39,6 +41,8 @@ function App() {
     currentStep: 0,
     totalPrice: 0,
     customerID: 0,
+    showDomainConfirmation: false,
+    showDomainConfirmStep: false,
   });
 
   const handleSelectPlan = (plan: PlanType) => {
@@ -82,10 +86,36 @@ function App() {
     setState((prev) => ({ ...prev, customerID }));
   };
 
+  const handleShowDomainConfirmation = (showDomainConfirmation: boolean) => {
+    setState((prev) => ({ ...prev, showDomainConfirmation }));
+  };
+
+  const handleNo = () => {
+    setState((prev) => ({
+      ...prev,
+      showDomainConfirmation: false,
+      showDomainConfirmStep: false,
+      currentStep: 4,
+    }));
+  };
+
+  const handleShowDomainConfirmStep = (showDomainConfirmStep: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      showDomainConfirmStep: showDomainConfirmStep,
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:py-12">
       <div className="max-w-4xl mx-auto">
-        <Steps steps={STEPS} currentStep={state.currentStep} />
+        {state.showDomainConfirmStep && (
+          <Steps steps={STEPS} currentStep={state.currentStep} />
+        )}
+
+        {!state.showDomainConfirmStep && (
+          <Steps steps={confirmedSTEPS} currentStep={state.currentStep} />
+        )}
 
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-8">
           {state.currentStep === 0 && (
@@ -96,14 +126,23 @@ function App() {
             />
           )}
 
-          {state.currentStep === 1 && (
+          {!state.showDomainConfirmation && state.currentStep === 1 && (
             <UserRegistration
               userDetails={state.userDetails}
               plan={state.plan}
               onUpdateDetails={handleUpdateUserDetails}
-              onNext={handleNext}
               onBack={handleBack}
+              onShowDomainConfirmation={handleShowDomainConfirmation}
             />
+          )}
+
+          {state.showDomainConfirmation && (
+            <DomainConfirmation
+              onNext={handleNext}
+              onNo={handleNo}
+              onShowDomainConfirmStep={handleShowDomainConfirmStep}
+              onShowDomainConfirmation={handleShowDomainConfirmation}
+            ></DomainConfirmation>
           )}
 
           {state.currentStep === 2 && (
