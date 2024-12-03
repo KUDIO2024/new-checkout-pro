@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { LoadingSpinner } from "../LoadingSpinner";
 import type { CheckoutState } from "../../types/checkout";
+import { createOpportunity } from "../../services/api/opportunity";
 
 interface CardPaymentFormProps {
   totalPrice: number;
@@ -22,6 +23,8 @@ export function CardPaymentForm({
   const domain = state.domain && state.domain?.name + state.domain?.extension;
   const emailPlan = state.emailPlan;
   const userDetails = state.userDetails;
+
+  console.log(state);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -78,6 +81,17 @@ export function CardPaymentForm({
           if (registerDomainResponse.response.status) {
             onCustomerID(registerDomainResponse.customerId);
             alert("Domain registered successfully");
+
+            setIsProcessing(false);
+
+            // Create opportunity with products
+            const opportunityResponse = await createOpportunity(state);
+
+            if (!opportunityResponse.success) {
+              throw new Error("Failed to create opportunity in Flowlu");
+            }
+
+            console.log(opportunityResponse);
           } else {
             alert("Failed to register domain");
           }
@@ -87,6 +101,16 @@ export function CardPaymentForm({
         if (registerDomainResponse.response.status) {
           onCustomerID(registerDomainResponse.customerId);
           alert("Domain registered successfully");
+          setIsProcessing(false);
+
+          // Create opportunity with products
+          const opportunityResponse = await createOpportunity(state);
+
+          if (!opportunityResponse.success) {
+            throw new Error("Failed to create opportunity in Flowlu");
+          }
+
+          console.log(opportunityResponse);
         } else {
           alert("Failed to register domain");
         }

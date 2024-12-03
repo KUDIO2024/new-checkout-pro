@@ -1,33 +1,39 @@
-import { FLOWLU_CONFIG, FLOWLU_ENDPOINTS } from './constants';
-import { makeRequest } from './request';
-import { FlowluApiError } from './errors';
-import { formatCurrency } from '../../utils/currency';
-import type { FlowluResponse } from './types';
-import type { UserDetails, PlanType } from '../../types/checkout';
+import { FLOWLU_CONFIG, FLOWLU_ENDPOINTS } from "./constants";
+import { makeRequest } from "./request";
+import { FlowluApiError } from "./errors";
+import { formatCurrency } from "../../utils/currency";
+import type { FlowluResponse } from "./types";
+import type { CheckoutState } from "../../types/checkout";
 
-function calculateTotals(plan: PlanType) {
-  const hosting = plan === 'monthly' 
-    ? { price: 15, period: 'per month' }
-    : { price: 150, period: 'per year' };
-  
-  const development = plan === 'monthly' ? 450 : 369;
-  const domain = 12;
-  const emailHosting = 19.20; // Basic email hosting yearly
-
-  return {
-    hosting,
-    development,
-    domain,
-    emailHosting,
-    total: hosting.price + development + domain + emailHosting
+function generateOrderSummary(state: CheckoutState): string {
+  const development = state.plan === "monthly" ? 450 : 369;
+  const hosting = {
+    price: state.plan === "monthly" ? 15 : 150,
+    period: state.plan === "monthly" ? "per month" : "per year",
   };
-}
-
-function generateOrderSummary(
-  userDetails: UserDetails,
-  plan: PlanType
-): string {
-  const { hosting, development, domain, emailHosting, total } = calculateTotals(plan);
+  let emailHosting = 0;
+  switch (state.emailPlan) {
+    case "basic":
+      emailHosting = 19.2;
+      break;
+    case "standard":
+      emailHosting = 43.2;
+      break;
+    case "business":
+      emailHosting = 69.99;
+      break;
+    default:
+      emailHosting = 0;
+      break;
+  }
+  const domainPrice = state?.domain?.price || 0;
+  const mailAccounts =
+    state.emailPlan &&
+    (state?.emailPlan === "basic"
+      ? 1
+      : state?.emailPlan === "standard"
+      ? 10
+      : "unlimited");
 
   return `
 NEW ORDER SUMMARY
@@ -35,53 +41,62 @@ NEW ORDER SUMMARY
 
 Plan Details
 -----------
-Hosting Plan: ${plan === 'monthly' ? 'Monthly' : 'Yearly'}
+Hosting Plan: ${state.plan === "monthly" ? "Monthly" : "Yearly"}
 Website Development: ${formatCurrency(development)}
 Hosting: ${formatCurrency(hosting.price)} ${hosting.period}
-Domain Registration (.co.uk): ${formatCurrency(domain)} per year
-Email Hosting (Basic): ${formatCurrency(emailHosting)} per year
+Domain Registration (${
+    state?.domain.name + state?.domain.extension
+  }): ${formatCurrency((domainPrice * 3.36).toFixed(2))} per year
+Email Hosting (${state.emailPlan && state.emailPlan}): ${formatCurrency(
+    emailHosting
+  )} per year
 
-Total: ${formatCurrency(total)}${plan === 'monthly' ? ' + monthly hosting' : ' per year'}
+Total: ${formatCurrency(state.totalPrice)}${
+    state.plan === "monthly" ? " per month" : " per year"
+  }
 
-Email Hosting Features
+${
+  state.emailPlan &&
+  `Email Hosting Features
 -------------------
-• 1 Email Account
+• ${mailAccounts} Email Account(s)
 • 2GB Storage
 • 25MB Attachment Limit
 • Webmail Access
-• IMAP/POP3 Support
+• IMAP/POP3 Support`
+}
 
 Customer Details
 --------------
-Name: ${userDetails.firstName} ${userDetails.lastName}
-Email: ${userDetails.email}
-Phone: ${userDetails.phone}
+Name: ${state.userDetails.firstName} ${state.userDetails.lastName}
+Email: ${state.userDetails.email}
+Phone: ${state.userDetails.phone}
 
 Billing Address
 --------------
-${userDetails.address.line1}
-${userDetails.address.line2 ? userDetails.address.line2 + '\n' : ''}${userDetails.address.city}
-${userDetails.address.region}
-${userDetails.address.postalCode}
-${userDetails.address.country}
+${state.userDetails.address.line1}
+${
+  state.userDetails.address.line2 ? state.userDetails.address.line2 + "\n" : ""
+}${state.userDetails.address.city}
+${state.userDetails.address.region}
+${state.userDetails.address.postalCode}
+${state.userDetails.address.country}
 `.trim();
 }
 
 export async function createOpportunity(
-  contactId: number,
-  userDetails: UserDetails,
-  plan: PlanType
+  state: CheckoutState
 ): Promise<FlowluResponse> {
   try {
-    const now = new Date().toISOString().split('T')[0];
-    const { total } = calculateTotals(plan);
-    const description = generateOrderSummary(userDetails, plan);
+    const now = new Date().toISOString().split("T")[0];
+    const total = state.totalPrice;
+    const description = generateOrderSummary(state);
 
     const opportunityResponse = await makeRequest(
       FLOWLU_ENDPOINTS.OPPORTUNITY,
       {
-        name: 'NEW ORDER',
-        customer_id: contactId,
+        name: "NEW ORDER",
+        customer_id: state.flowluClientId,
         assignee_id: FLOWLU_CONFIG.ASSIGNEE_ID,
         start_date: now,
         created_date: now,
@@ -96,12 +111,14 @@ export async function createOpportunity(
     );
 
     if (!opportunityResponse.success || !opportunityResponse.data?.id) {
-      throw new FlowluApiError('Failed to create opportunity');
+      throw new FlowluApiError("Failed to create opportunity");
     }
 
     return opportunityResponse;
   } catch (error) {
-    console.error('Error creating opportunity:', error);
-    throw error instanceof FlowluApiError ? error : new FlowluApiError('Failed to create opportunity');
+    console.error("Error creating opportunity:", error);
+    throw error instanceof FlowluApiError
+      ? error
+      : new FlowluApiError("Failed to create opportunity");
   }
 }

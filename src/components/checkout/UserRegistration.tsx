@@ -12,14 +12,15 @@ interface UserRegistrationProps {
   onUpdateDetails: (details: UserDetails) => void;
   onBack: () => void;
   onShowDomainConfirmation: (showDomainConfirmation: boolean) => void;
+  onFlowluClientId: (clientId: number) => void;
 }
 
 export function UserRegistration({
   userDetails,
-  plan,
   onUpdateDetails,
   onBack,
   onShowDomainConfirmation,
+  onFlowluClientId,
 }: UserRegistrationProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ export function UserRegistration({
     setErrors({});
 
     try {
-      await createFlowluClient(userDetails, plan);
+      await createFlowluClient(userDetails, onFlowluClientId);
       onShowDomainConfirmation(true);
     } catch (error) {
       console.error("Error creating client:", error);

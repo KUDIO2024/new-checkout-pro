@@ -37,4 +37,5 @@ export interface CheckoutState {
   customerID: number;
   showDomainConfirmation: boolean;
   showDomainConfirmStep: boolean;
+  flowluClientId: number;
 }

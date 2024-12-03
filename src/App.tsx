@@ -43,6 +43,7 @@ function App() {
     customerID: 0,
     showDomainConfirmation: false,
     showDomainConfirmStep: false,
+    flowluClientId: 0,
   });
 
   const handleSelectPlan = (plan: PlanType) => {
@@ -114,6 +115,10 @@ function App() {
     }
   };
 
+  const handleFlowluClientId = (flowluClientId: number) => {
+    setState((prev) => ({ ...prev, flowluClientId }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:py-12">
       <div className="max-w-4xl mx-auto">
@@ -141,6 +146,7 @@ function App() {
               onUpdateDetails={handleUpdateUserDetails}
               onBack={handleBack}
               onShowDomainConfirmation={handleShowDomainConfirmation}
+              onFlowluClientId={handleFlowluClientId}
             />
           )}
 
