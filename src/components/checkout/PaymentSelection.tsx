@@ -73,8 +73,10 @@ export function PaymentSelection({
       {selectedMethod === "invoice" && (
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-blue-800 mb-2">
-            We will begin your project straight away and an invoice will be sent
-            to you which will have to be paid within 14 days of today's date.
+            We will begin your project straight away after our first initial
+            call. You will be sent an invoice which will have to be paid within
+            14 days from today. Please note, your domain and email hosting will
+            not be registered until invoice is settled.
           </p>
           <p className="text-sm text-blue-600">
             Please note: Late fees apply - see Terms and Conditions.

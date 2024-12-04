@@ -42,9 +42,11 @@ function generateOrderSummary(
     : "";
   const domainPrice = state.domain ? (state.domain.price * 3.36).toFixed(2) : 0;
   const paymentMethod =
-    state?.paymentMethod === "card"
+    state.paymentMethod === "card"
       ? `Paid by card - Transaction ID: ${transactionId}`
-      : "Invoice Payment";
+      : state.paymentMethod === "invoice"
+      ? "Invoice Payment"
+      : null;
 
   return `
 NEW ORDER SUMMARY

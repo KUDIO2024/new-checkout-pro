@@ -6,6 +6,7 @@ import { DomainRegistration } from "./components/checkout/DomainRegistration";
 import { EmailHosting } from "./components/checkout/EmailHosting";
 import { Confirmation } from "./components/checkout/Confirmation";
 import DomainConfirmation from "./components/checkout/DomainConfirmation";
+import { updateOpportunity } from "./services/api/opportunity";
 import type {
   CheckoutState,
   PlanType,
@@ -76,9 +77,11 @@ function App() {
     setState((prev) => ({ ...prev, currentStep: prev.currentStep - 1 }));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // Here you would typically integrate with a payment processor
-    alert("Order confirmed! Thank you for your purchase.");
+    const opportunityResponse = await updateOpportunity(state, "");
+    console.log(opportunityResponse);
+    setState((prev) => ({ ...prev, paymentStatus: true }));
   };
 
   const handleTotalPrice = (totalPrice: number) => {
