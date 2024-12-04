@@ -1,12 +1,13 @@
 export const FLOWLU_ENDPOINTS = {
-  CONTACT: '/crm/contact/create',
-  OPPORTUNITY: '/crm/lead/create',
-  PRODUCT: '/crm/lead_product/create',
+  CONTACT: "/crm/contact/create",
+  OPPORTUNITY: "/crm/lead/create",
+  OPPORTUNITY_UPDATE: "/crm/lead/update",
+  PRODUCT: "/crm/lead_product/create",
 } as const;
 
 export const FLOWLU_CONFIG = {
-  API_KEY: 'RmFLYnowblNWNXp5eXh6UDBPNGF5ZXdVOW1UUjdlekxfMTExMjc5',
-  BASE_URL: 'https://kudio.flowlu.com/api/v1/module',
+  API_KEY: "RmFLYnowblNWNXp5eXh6UDBPNGF5ZXdVOW1UUjdlekxfMTExMjc5",
+  BASE_URL: "https://kudio.flowlu.com/api/v1/module",
   PIPELINE_ID: 2,
   PIPELINE_STAGE_ID: 1,
   CURRENCY_ID: 1, // GBP
@@ -26,8 +27,8 @@ export const FLOWLU_PRODUCTS = {
     CO_UK: { id: 25, price: 12 },
   },
   EMAIL: {
-    BASIC: { id: 30, price: 19.20, name: 'Basic Email Hosting' },
-    STANDARD: { id: 31, price: 43.20, name: 'Standard Email Hosting' },
-    BUSINESS: { id: 32, price: 69.99, name: 'Business Email Hosting' },
+    BASIC: { id: 30, price: 19.2, name: "Basic Email Hosting" },
+    STANDARD: { id: 31, price: 43.2, name: "Standard Email Hosting" },
+    BUSINESS: { id: 32, price: 69.99, name: "Business Email Hosting" },
   },
 } as const;

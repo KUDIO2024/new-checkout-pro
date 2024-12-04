@@ -8,6 +8,7 @@ interface PaymentSelectionProps {
   totalPrice: number;
   state: CheckoutState;
   onCustomerID: (customerID: number) => void;
+  onPaymentStatus: (paymentStatus: boolean) => void;
 }
 
 export function PaymentSelection({
@@ -16,6 +17,7 @@ export function PaymentSelection({
   totalPrice,
   state,
   onCustomerID,
+  onPaymentStatus,
 }: PaymentSelectionProps) {
   return (
     <div className="space-y-6">
@@ -63,6 +65,7 @@ export function PaymentSelection({
             totalPrice={totalPrice}
             state={state}
             onCustomerID={onCustomerID}
+            onPaymentStatus={onPaymentStatus}
           />
         </div>
       )}

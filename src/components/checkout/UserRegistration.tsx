@@ -4,23 +4,31 @@ import { Input } from "../Input";
 import { LoadingSpinner } from "../LoadingSpinner";
 import { ErrorMessage } from "../ErrorMessage";
 import { createFlowluClient } from "../../services/api/flowlu";
-import type { UserDetails, PlanType } from "../../types/checkout";
+import type {
+  UserDetails,
+  PlanType,
+  CheckoutState,
+} from "../../types/checkout";
 
 interface UserRegistrationProps {
+  state: CheckoutState;
   userDetails: UserDetails;
   plan: PlanType;
   onUpdateDetails: (details: UserDetails) => void;
   onBack: () => void;
   onShowDomainConfirmation: (showDomainConfirmation: boolean) => void;
   onFlowluClientId: (clientId: number) => void;
+  onOpportunityId: (opportunityId: number) => void;
 }
 
 export function UserRegistration({
+  state,
   userDetails,
   onUpdateDetails,
   onBack,
   onShowDomainConfirmation,
   onFlowluClientId,
+  onOpportunityId,
 }: UserRegistrationProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +62,12 @@ export function UserRegistration({
     setErrors({});
 
     try {
-      await createFlowluClient(userDetails, onFlowluClientId);
+      await createFlowluClient(
+        state,
+        userDetails,
+        onFlowluClientId,
+        onOpportunityId
+      );
       onShowDomainConfirmation(true);
     } catch (error) {
       console.error("Error creating client:", error);

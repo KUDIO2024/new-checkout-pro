@@ -11,6 +11,7 @@ interface ConfirmationProps {
   onBack: () => void;
   onConfirm: () => void;
   onCustomerID: (customerID: number) => void;
+  onPaymentStatus: (paymentStatus: boolean) => void;
 }
 
 export function Confirmation({
@@ -20,6 +21,7 @@ export function Confirmation({
   onConfirm,
   onTotalPrice,
   onCustomerID,
+  onPaymentStatus,
 }: ConfirmationProps) {
   const getHostingPrice = () =>
     state.plan === "monthly" ? "£15/month" : "£150/year";
@@ -169,8 +171,18 @@ export function Confirmation({
           totalPrice={totalPrice}
           state={state}
           onCustomerID={onCustomerID}
+          onPaymentStatus={onPaymentStatus}
         />
       </div>
+
+      {state.paymentStatus && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <p className="text-lg font-medium text-gray-800 leading-relaxed">
+            Thank you, your order has been received. Please keep an eye out for
+            your emails — you can now close this window.
+          </p>
+        </div>
+      )}
 
       <div className="flex justify-between">
         <Button variant="secondary" onClick={onBack}>

@@ -44,6 +44,8 @@ function App() {
     showDomainConfirmation: false,
     showDomainConfirmStep: false,
     flowluClientId: 0,
+    opportunityId: 0,
+    paymentStatus: false,
   });
 
   const handleSelectPlan = (plan: PlanType) => {
@@ -119,6 +121,14 @@ function App() {
     setState((prev) => ({ ...prev, flowluClientId }));
   };
 
+  const handleOpportunityId = (opportunityId: number) => {
+    setState((prev) => ({ ...prev, opportunityId }));
+  };
+
+  const handlePaymentStatus = (paymentStatus: boolean) => {
+    setState((prev) => ({ ...prev, paymentStatus }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:py-12">
       <div className="max-w-4xl mx-auto">
@@ -141,12 +151,14 @@ function App() {
 
           {!state.showDomainConfirmation && state.currentStep === 1 && (
             <UserRegistration
+              state={state}
               userDetails={state.userDetails}
               plan={state.plan}
               onUpdateDetails={handleUpdateUserDetails}
               onBack={handleBack}
               onShowDomainConfirmation={handleShowDomainConfirmation}
               onFlowluClientId={handleFlowluClientId}
+              onOpportunityId={handleOpportunityId}
             />
           )}
 
@@ -185,6 +197,7 @@ function App() {
               onBack={handleBackFromComfirm}
               onConfirm={handleConfirm}
               onCustomerID={handleCustomerID}
+              onPaymentStatus={handlePaymentStatus}
             />
           )}
         </div>

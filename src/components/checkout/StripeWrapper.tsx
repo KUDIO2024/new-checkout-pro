@@ -9,12 +9,14 @@ interface StripeWrapperProps {
   totalPrice: number;
   state: CheckoutState;
   onCustomerID: (customerID: number) => void;
+  onPaymentStatus: (paymentStatus: boolean) => void;
 }
 
 const StripeWrapper: React.FC<StripeWrapperProps> = ({
   totalPrice,
   state,
   onCustomerID,
+  onPaymentStatus,
 }) => {
   const [stripePromise, setStripePromise] = useState<any>(null);
 
@@ -37,6 +39,7 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
         totalPrice={totalPrice}
         state={state}
         onCustomerID={onCustomerID}
+        onPaymentStatus={onPaymentStatus}
       />
     </Elements>
   );

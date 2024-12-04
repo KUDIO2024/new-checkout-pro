@@ -2,18 +2,20 @@ import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { LoadingSpinner } from "../LoadingSpinner";
 import type { CheckoutState } from "../../types/checkout";
-import { createOpportunity } from "../../services/api/opportunity";
+import { updateOpportunity } from "../../services/api/opportunity";
 
 interface CardPaymentFormProps {
   totalPrice: number;
   state: CheckoutState;
   onCustomerID: (customerId: number) => void;
+  onPaymentStatus: (paymentStatus: boolean) => void;
 }
 
 export function CardPaymentForm({
   totalPrice,
   state,
   onCustomerID,
+  onPaymentStatus,
 }: CardPaymentFormProps) {
   const stripe = useStripe(); // Access the Stripe object.
   const elements = useElements(); // Access Stripe Elements.
@@ -61,7 +63,7 @@ export function CardPaymentForm({
       }
 
       const paymentMethodId = paymentMethod.id;
-      const { clientSecret, payment_succeed, newerror } =
+      const { clientSecret, payment_succeed, newerror, transactionId } =
         await createPaymentIntent(paymentMethodId, totalPrice);
 
       if (clientSecret) {
@@ -74,48 +76,51 @@ export function CardPaymentForm({
           }
         );
         if (error) {
-          alert("Payment failed.");
+          setError("Payment Failed");
           return;
         } else if (paymentIntent.status === "succeeded") {
-          const registerDomainResponse = await registerDomain();
-          if (registerDomainResponse.response.status) {
-            onCustomerID(registerDomainResponse.customerId);
-            alert("Domain registered successfully");
+          console.log(transactionId);
+          onPaymentStatus(true);
+          if (state.domain || state.emailPlan) {
+            const registerDomainResponse = await registerDomain();
+            if (registerDomainResponse.response.status) {
+              onCustomerID(registerDomainResponse.customerId);
+              setIsProcessing(false);
 
-            setIsProcessing(false);
-
-            // Create opportunity with products
-            const opportunityResponse = await createOpportunity(state);
-
-            if (!opportunityResponse.success) {
-              throw new Error("Failed to create opportunity in Flowlu");
+              const opportunityResponse = await updateOpportunity(
+                state,
+                transactionId
+              );
+              if (!opportunityResponse.success) {
+                throw new Error("Failed to create opportunity in Flowlu");
+              }
+            } else {
+              setError("Failed to register domain and email");
             }
-
-            console.log(opportunityResponse);
-          } else {
-            alert("Failed to register domain");
           }
         }
       } else if (payment_succeed) {
-        const registerDomainResponse = await registerDomain();
-        if (registerDomainResponse.response.status) {
-          onCustomerID(registerDomainResponse.customerId);
-          alert("Domain registered successfully");
-          setIsProcessing(false);
+        console.log(transactionId);
+        onPaymentStatus(true);
+        if (state.domain || state.emailPlan) {
+          const registerDomainResponse = await registerDomain();
+          if (registerDomainResponse.response.status) {
+            onCustomerID(registerDomainResponse.customerId);
+            setIsProcessing(false);
 
-          // Create opportunity with products
-          const opportunityResponse = await createOpportunity(state);
-
-          if (!opportunityResponse.success) {
-            throw new Error("Failed to create opportunity in Flowlu");
+            const opportunityResponse = await updateOpportunity(
+              state,
+              transactionId
+            );
+            if (!opportunityResponse.success) {
+              throw new Error("Failed to create opportunity in Flowlu");
+            }
+          } else {
+            setError("Failed to register domain and email");
           }
-
-          console.log(opportunityResponse);
-        } else {
-          alert("Failed to register domain");
         }
       } else if (newerror) {
-        alert(newerror);
+        setError(newerror);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");

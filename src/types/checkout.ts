@@ -38,4 +38,6 @@ export interface CheckoutState {
   showDomainConfirmation: boolean;
   showDomainConfirmStep: boolean;
   flowluClientId: number;
+  opportunityId: number;
+  paymentStatus: boolean;
 }
