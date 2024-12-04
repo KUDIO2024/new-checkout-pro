@@ -24,8 +24,8 @@ export function Confirmation({
   onPaymentStatus,
 }: ConfirmationProps) {
   const getHostingPrice = () =>
-    state.plan === "monthly" ? "£15/month" : "£150/year";
-  const getWebDevPrice = () => (state.plan === "monthly" ? "£450" : "£369");
+    state.plan === "monthly" ? "£19/month" : "£185/year";
+  const getWebDevPrice = () => (state.plan === "monthly" ? "£675" : "£549");
   const getEmailPrice = () => {
     switch (state.emailPlan) {
       case "basic":

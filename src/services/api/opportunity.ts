@@ -9,9 +9,9 @@ function generateOrderSummary(
   state: CheckoutState,
   transactionId: string
 ): string {
-  const development = state.plan === "monthly" ? 450 : 369;
+  const development = state.plan === "monthly" ? 675 : 549;
   const hosting = {
-    price: state.plan === "monthly" ? 15 : 150,
+    price: state.plan === "monthly" ? 19 : 185,
     period: state.plan === "monthly" ? "per month" : "per year",
   };
   const emailPlan = state.emailPlan ? state.emailPlan : "";
