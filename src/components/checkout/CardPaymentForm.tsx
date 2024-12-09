@@ -8,7 +8,7 @@ interface CardPaymentFormProps {
   totalPrice: number;
   state: CheckoutState;
   onCustomerID: (customerId: number) => void;
-  onPaymentStatus: (paymentStatus: boolean) => void;
+  onPaymentStatus: (paymentStatus: number) => void;
 }
 
 export function CardPaymentForm({
@@ -57,6 +57,7 @@ export function CardPaymentForm({
           name: "Customer Name",
         },
       });
+      console.log({ error, paymentMethod });
 
       if (error) {
         throw error;
@@ -65,6 +66,12 @@ export function CardPaymentForm({
       const paymentMethodId = paymentMethod.id;
       const { clientSecret, payment_succeed, newerror, transactionId } =
         await createPaymentIntent(paymentMethodId, totalPrice);
+      console.log("payment status ", {
+        clientSecret,
+        payment_succeed,
+        newerror,
+        transactionId,
+      });
 
       if (clientSecret) {
         const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -80,7 +87,7 @@ export function CardPaymentForm({
           return;
         } else if (paymentIntent.status === "succeeded") {
           console.log(transactionId);
-          onPaymentStatus(true);
+          onPaymentStatus(1);
           if (state.domain || state.emailPlan) {
             const registerDomainResponse = await registerDomain();
             if (registerDomainResponse.response.status) {
@@ -101,7 +108,7 @@ export function CardPaymentForm({
         }
       } else if (payment_succeed) {
         console.log(transactionId);
-        onPaymentStatus(true);
+        onPaymentStatus(1);
         if (state.domain || state.emailPlan) {
           const registerDomainResponse = await registerDomain();
           if (registerDomainResponse.response.status) {
@@ -120,6 +127,7 @@ export function CardPaymentForm({
           }
         }
       } else if (newerror) {
+        onPaymentStatus(2);
         setError(newerror);
       }
     } catch (err) {
@@ -149,10 +157,17 @@ export function CardPaymentForm({
         throw new Error("Failed to create payment intent");
       }
 
-      const { clientSecret, payment_succeed, error } = await response.json();
-      return { clientSecret, payment_succeed, newerror: error };
+      const { clientSecret, payment_succeed, transactionId, error } =
+        await response.json();
+      return { clientSecret, payment_succeed, transactionId, newerror: error };
     } catch (error) {
       console.error("Error creating payment intent:", error);
+      return {
+        clientSecret: null,
+        payment_succeed: false,
+        transactionId: "",
+        newerror: error,
+      };
     }
   }
 

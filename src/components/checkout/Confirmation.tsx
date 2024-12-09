@@ -11,7 +11,7 @@ interface ConfirmationProps {
   onBack: () => void;
   onConfirm: () => void;
   onCustomerID: (customerID: number) => void;
-  onPaymentStatus: (paymentStatus: boolean) => void;
+  onPaymentStatus: (paymentStatus: number) => void;
 }
 
 export function Confirmation({
@@ -164,23 +164,45 @@ export function Confirmation({
         <div className="mt-4"></div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-        <PaymentSelection
-          selectedMethod={state.paymentMethod}
-          onSelectMethod={onSelectPaymentMethod}
-          totalPrice={totalPrice}
-          state={state}
-          onCustomerID={onCustomerID}
-          onPaymentStatus={onPaymentStatus}
-        />
-      </div>
-
-      {state.paymentStatus && (
+      {state.paymentStatus == 0 && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <p className="text-lg font-medium text-gray-800 leading-relaxed">
+          <PaymentSelection
+            selectedMethod={state.paymentMethod}
+            onSelectMethod={onSelectPaymentMethod}
+            totalPrice={totalPrice}
+            state={state}
+            onCustomerID={onCustomerID}
+            onPaymentStatus={onPaymentStatus}
+          />
+        </div>
+      )}
+
+      {state.paymentStatus == 1 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6 flex flex-col items-center">
+          <div className="flex items-center justify-center w-12 h-12 bg-green-100 text-green-600 rounded-full text-2xl font-bold mb-4">
+            ✓
+          </div>
+          <p className="text-lg font-medium text-gray-800 leading-relaxed text-center">
             Thank you, your order has been received. Please keep an eye out for
             your emails — you can now close this window.
           </p>
+        </div>
+      )}
+
+      {state.paymentStatus == 2 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6 h-48 flex flex-col justify-center items-center">
+          <div className="flex items-center justify-center w-12 h-12 bg-red-100 text-red-600 rounded-full text-2xl font-bold mb-4">
+            X
+          </div>
+          <p className="text-lg font-medium text-gray-800 leading-relaxed mb-4">
+            Payment Declined
+          </p>
+          <button
+            onClick={() => onPaymentStatus(0)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            Try Again
+          </button>
         </div>
       )}
 
@@ -188,9 +210,11 @@ export function Confirmation({
         <Button variant="secondary" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={onConfirm} disabled={!state.paymentMethod}>
-          Confirm Order
-        </Button>
+        {state.paymentMethod === "invoice" && (
+          <Button onClick={onConfirm} disabled={!state.paymentMethod}>
+            Confirm Order
+          </Button>
+        )}
       </div>
     </div>
   );

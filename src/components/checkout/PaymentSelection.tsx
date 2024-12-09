@@ -8,7 +8,7 @@ interface PaymentSelectionProps {
   totalPrice: number;
   state: CheckoutState;
   onCustomerID: (customerID: number) => void;
-  onPaymentStatus: (paymentStatus: boolean) => void;
+  onPaymentStatus: (paymentStatus: number) => void;
 }
 
 export function PaymentSelection({
