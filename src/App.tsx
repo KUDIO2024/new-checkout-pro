@@ -46,7 +46,7 @@ function App() {
     showDomainConfirmStep: false,
     flowluClientId: 0,
     opportunityId: 0,
-    paymentStatus: false,
+    paymentStatus: 0,
   });
 
   const handleSelectPlan = (plan: PlanType) => {
@@ -81,7 +81,7 @@ function App() {
     // Here you would typically integrate with a payment processor
     const opportunityResponse = await updateOpportunity(state, "");
     console.log(opportunityResponse);
-    setState((prev) => ({ ...prev, paymentStatus: true }));
+    setState((prev) => ({ ...prev, paymentStatus: 1 }));
   };
 
   const handleTotalPrice = (totalPrice: number) => {
@@ -128,7 +128,7 @@ function App() {
     setState((prev) => ({ ...prev, opportunityId }));
   };
 
-  const handlePaymentStatus = (paymentStatus: boolean) => {
+  const handlePaymentStatus = (paymentStatus: number) => {
     setState((prev) => ({ ...prev, paymentStatus }));
   };
 
