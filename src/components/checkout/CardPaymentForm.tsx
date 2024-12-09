@@ -64,11 +64,6 @@ export function CardPaymentForm({
       }
 
       const paymentMethodId = paymentMethod.id;
-      const paymentIntentResponse = await createPaymentIntent(
-        paymentMethodId,
-        totalPrice
-      );
-      console.log("payment status ", paymentIntentResponse);
       const { clientSecret, payment_succeed, newerror, transactionId } =
         await createPaymentIntent(paymentMethodId, totalPrice);
       console.log("payment status ", {
